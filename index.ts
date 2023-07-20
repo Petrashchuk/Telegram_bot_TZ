@@ -1,4 +1,4 @@
-import express, { Express } from 'express';
+import express, {Express} from 'express';
 import dotenv from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
 
@@ -24,12 +24,13 @@ const createChatInviteLink = (channelPublicName: string) => bot.createChatInvite
 
 bot.on('message', async (msg) => {
     try {
-        if (msg.text) {
-            const { invite_link } = await createChatInviteLink(msg.text);
+        if (msg.text && msg.text.startsWith('@')) {
+            const {invite_link} = await createChatInviteLink(msg.text);
             bot.sendMessage(msg.chat.id, `Приватне посилання: ${invite_link}`);
         }
-    } catch (error) {
-        bot.sendMessage(msg.chat.id, 'Сталася помилка під час конвертації публічного лінка. Спробуйте ще раз пізніше.');
+    } catch (error: any) {
+        const errMsg = error.message || "Сталася помилка під час конвертації публічного лінка. Спробуйте ще раз пізніше.";
+        bot.sendMessage(msg.chat.id, errMsg);
     }
 })
 
